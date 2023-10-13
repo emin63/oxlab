@@ -16,8 +16,12 @@ export PRINT_HELP_PYSCRIPT
 help:   ## Show help for avaiable targets
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+
+testpypi: README.rst  ## Push project to pypi
+	 python3 -m build && twine upload -r testpypi dist/*
+
 pypi: README.rst  ## Push project to pypi
-	 python3 setup.py sdist upload -r pypi
+	 python3 -m build && twine upload dist/*
 
 README.rst: README.org  ## Create README.rst from README.org
 	pandoc --from=org --to=rst --output=README.rst README.org

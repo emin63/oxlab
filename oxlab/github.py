@@ -55,7 +55,8 @@ def prep_ssh_files(ssh_deploy_key: str, ssh_deploy_key_file: str,
 
 
 def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
-        bool, str] = True, working_dir: str = '~/code'):
+        bool, str] = True, working_dir: str = '~/code',
+             src_dir: typing.Union[bool, str] = True):
     """Get the repo from GitHub (either clone or pull).
 
     :param owner:  String representing owner of repo (e.g., 'emin63').
@@ -68,6 +69,15 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
 
     :param working_dir='~/code':  Working directory to inside which the
                                   repo will live once we clone/pull it.
+
+    :param src_dir=True:  Either `True` or path to the source directory
+                          (relative to the repo) you want to get included
+                          into sys.path. If your project is setup in
+                          the usual way where there is a directory
+                          with the same name as your repository
+                          (i.e., `repo`) at the top-level, then just
+                          leaving this as `True` will automatically
+                          set `src_dir` correctly.
 
     ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 
@@ -97,13 +107,17 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
 
     if process.returncode != 0:
         raise ValueError(f'Error running process: {process}')
-    if repo_dir not in sys.path:
-        sys.path.insert(0, repo_dir)
+    if src_dir is True:
+        src_dir = os.path.join(abspath(repo_dir), repo)
+
+    if src_dir not in sys.path:
+        sys.path.insert(0, src_dir)
 
 
 def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
                     ssh_dir: str = '~/.ssh', working_dir: str = '~/code',
                     ssh_deploy_key_file: typing.Union[bool, str] = True,
+                    src_dir: typing.Union[bool, str] = True,
                     only_colab=True):
     """Add a GitHub repo into our python environment.
 
@@ -135,4 +149,4 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
             return
     ssh_dir = os.path.expanduser(ssh_dir)
     prep_ssh_files(ssh_deploy_key, ssh_deploy_key_file, ssh_dir)
-    get_repo(owner, repo, ssh_deploy_key_file, working_dir)
+    get_repo(owner, repo, ssh_deploy_key_file, working_dir, src_dir)

@@ -25,7 +25,7 @@ def get_readme():
 
 setup(
     name='oxlab',
-    version=__VERSION__,
+    version=__version__,
     description='Tools for Google Colab and Jupyter notebooks.',
     long_description=get_readme(),
     url='http://github.com/emin63/oxlab',
