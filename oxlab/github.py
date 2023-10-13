@@ -28,12 +28,12 @@ def prep_ssh_files(ssh_deploy_key: str, ssh_deploy_key_file: str,
     ssh_deploy_key_file = os.path.expanduser(ssh_deploy_key_file)
     ssh_dir = os.path.expanduser(ssh_dir)
     if not os.path.exists(ssh_dir):
-        logging.warning(f'Creating new directory in %s', ssh_dir)
+        logging.warning('Creating new directory in %s', ssh_dir)
         os.makedirs(ssh_dir)
 
     # Create the key file if necessary
     if not os.path.exists(ssh_deploy_key_file):
-        logging.warning(f'Creating SSH deploy key in %s', ssh_deploy_key_file)
+        logging.warning('Creating SSH deploy key in %s', ssh_deploy_key_file)
         with open(ssh_deploy_key_file, 'w', encoding='utf8') as fdesc:
             fdesc.write(ssh_deploy_key)
         os.chmod(ssh_deploy_key_file, 0o600)
