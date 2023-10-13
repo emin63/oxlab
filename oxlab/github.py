@@ -148,5 +148,8 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
                 'Skip add_github_repo since only_colab=True and not in colab')
             return
     ssh_dir = os.path.expanduser(ssh_dir)
+    if ssh_deploy_key_file is True:
+        ssh_deploy_key_file = f'{ssh_dir}/ssh_{owner}_{repo}_deploy_key'
+    ssh_deploy_key_file = os.path.expanduser(ssh_deploy_key_file)
     prep_ssh_files(ssh_deploy_key, ssh_deploy_key_file, ssh_dir)
     get_repo(owner, repo, ssh_deploy_key_file, working_dir, src_dir)
