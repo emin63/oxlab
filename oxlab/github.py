@@ -28,12 +28,12 @@ def prep_ssh_files(ssh_deploy_key: str, ssh_deploy_key_file: str,
     ssh_deploy_key_file = os.path.expanduser(ssh_deploy_key_file)
     ssh_dir = os.path.expanduser(ssh_dir)
     if not os.path.exists(ssh_dir):
-        print(f'Creating new directory in {ssh_dir}')
+        logging.warning(f'Creating new directory in {ssh_dir}')
         os.makedirs(ssh_dir)
 
     # Create the key file if necessary
     if not os.path.exists(ssh_deploy_key_file):
-        print(f'Creating SSH deploy key in {ssh_deploy_key_file}')
+        logging.warning(f'Creating SSH deploy key in {ssh_deploy_key_file}')
         with open(ssh_deploy_key_file, 'w', encoding='utf8') as fdesc:
             fdesc.write(ssh_deploy_key)
         os.chmod(ssh_deploy_key_file, 0o600)
@@ -96,10 +96,12 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
     repo_dir = os.path.join(os.path.expanduser(working_dir), repo)
     my_env = {'GIT_SSH_COMMAND': f'ssh  -i {ssh_deploy_key_file}'}
     if os.path.exists(repo_dir):
+        logging.warning('Doing git pull in %s', repo_dir)
         process = subprocess.run(
             'git pull'.split(' '), env=my_env, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, cwd=repo_dir, check=False)
     else:
+        logging.warning('Doing git clone for %s/%s', owner, repo)
         process = subprocess.run(
             f'git clone git@github.com:{owner}/{repo}'.split(' '),
             env=my_env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -107,8 +109,11 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
 
     if process.returncode != 0:
         raise ValueError(f'Error running process: {process}')
+    logging.warning('Result of %s:\n---stdout---\n%s\n---stderr---\n%s',
+                    process.args, process.stdout.decode('utf8'),
+                    process.stderr.decode('utf8'))
     if src_dir is True:
-        src_dir = os.path.join(os.path.abspath(repo_dir), repo)
+        src_dir = repo_dir
 
     if src_dir not in sys.path:
         sys.path.insert(0, src_dir)
@@ -135,7 +140,7 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
                                       or string path to deploy key file.
 
     :param only_colab=True:  If True, and not running in Google Colab, then
-                             do nothing (except pring an info log message).
+                             do nothing (except print an info log message).
 
     ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
 
@@ -144,7 +149,7 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
     """
     if only_colab:
         if 'google.colab' not in sys.modules:
-            logging.info(
+            logging.warning(
                 'Skip add_github_repo since only_colab=True and not in colab')
             return
     ssh_dir = os.path.expanduser(ssh_dir)
