@@ -108,7 +108,7 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
     if process.returncode != 0:
         raise ValueError(f'Error running process: {process}')
     if src_dir is True:
-        src_dir = os.path.join(abspath(repo_dir), repo)
+        src_dir = os.path.join(os.path.abspath(repo_dir), repo)
 
     if src_dir not in sys.path:
         sys.path.insert(0, src_dir)
