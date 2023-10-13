@@ -1,0 +1,14 @@
+
+#+OPTIONS: ^:{}
+
+* Introduction
+
+The =oxlab= package provides tools for Google Colab and Jupyter
+notebooks.
+
+Sometimes you want to be able to use or distribute private GitHub
+repos in Jupyter notebooks that people may run on their local systems
+or in Google Colab. This project provides a simple way to accomplish
+that goal.
+
+Imagine you have an example notebook
