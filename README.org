@@ -11,4 +11,31 @@ repos in Jupyter notebooks that people may run on their local systems
 or in Google Colab. This project provides a simple way to accomplish
 that goal.
 
-Imagine you have an example notebook
+Imagine you have an example notebook called =oxlab_demo.ipynb= and you
+want to have it reference a private GitHub repo for your project.
+
+You can take the following steps:
+
+  1. Generate an SSH deploy key for your project via something like:
+     #+NAME: create-example-deploy-key
+     #+BEGIN_SRC shell
+     ssh-keygen -t ecdsa -f /tmp/example_deploy_key_id_ecdsa
+     #+END_SRC
+  2. Upload the public key (=/tmp/example_deploy_key_id_ecdsa.pub=) if
+     you used the above command to GitHub as discussed in the
+     [[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys][instructions on deploy keys]].
+  3. Create a cell in your notebook like the following where you
+     replace =$YOUR_PRIVATE_KEY= with you ssh deploy key generated in
+     step 1 (e.g., the contents of
+     =/tmp/example_deploy_key_id_ecdsa=), replace =$OWNER= with the
+     owner of your GitHub repo (e.g., =emin63=) and =$REPO= with your
+     repo (e.g., =oxlab=):
+     #+BEGIN_EXAMPLE
+     # @title Pull in our private github repo
+     SSH_DEPLOY_KEY = $YOUR_PRIVATE_KEY
+     !pip install oxlab
+     import oxlab
+     oxlab.add_github_repo($OWNER, $REPO, SSH_DEPLOY_KEY)
+     #+END_EXAMPLE
+  4. Then the remainder of your notebook will be able to reference
+     your repo contents.
