@@ -112,6 +112,24 @@ def get_repo(owner: str, repo: str, ssh_deploy_key_file: typing.Union[
     logging.warning('Result of %s:\n---stdout---\n%s\n---stderr---\n%s',
                     process.args, process.stdout.decode('utf8'),
                     process.stderr.decode('utf8'))
+    ensure_sys_setup(src_dir, repo_dir)
+
+
+def ensure_sys_setup(src_dir, repo_dir=None):
+    """Ensure that the src directory is included in sys.path correctly.
+
+    :param src_dir=True:  Either `True` or path to the source directory
+                          (relative to the repo) you want to get included
+                          into sys.path. If your project is setup in
+                          the usual way where there is a directory
+                          with the same name as your repository
+                          (i.e., `repo`) at the top-level, then just
+                          leaving this as `True` will automatically
+                          set `src_dir` correctly.
+
+    :param repo_dir:      Path to directory to include in sys.path if
+                          src_dir is `True` instead of a path.
+    """
     if src_dir is True:
         src_dir = repo_dir
 
@@ -139,6 +157,15 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
                                       auto-generate deploy key file name
                                       or string path to deploy key file.
 
+    :param src_dir=True:  Either `True` or path to the source directory
+                          (relative to the repo) you want to get included
+                          into sys.path. If your project is setup in
+                          the usual way where there is a directory
+                          with the same name as your repository
+                          (i.e., `repo`) at the top-level, then just
+                          leaving this as `True` will automatically
+                          set `src_dir` correctly.
+
     :param only_colab=True:  If True, and not running in Google Colab, then
                              do nothing (except print an info log message).
 
@@ -151,6 +178,8 @@ def add_github_repo(owner: str, repo: str, ssh_deploy_key: str,
         if 'google.colab' not in sys.modules:
             logging.warning(
                 'Skip add_github_repo since only_colab=True and not in colab')
+            ensure_sys_setup(src_dir, os.path.join(os.path.expanduser(
+                working_dir), repo))
             return
     ssh_dir = os.path.expanduser(ssh_dir)
     if ssh_deploy_key_file is True:
